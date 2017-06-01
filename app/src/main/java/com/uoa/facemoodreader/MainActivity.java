@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -14,7 +15,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -66,13 +66,12 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                     showCamera();
-                }
-                else {
+                } else {
                     //Camera permission is not granted.
                     if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.CAMERA)) {
                         Toast.makeText(MainActivity.this, "Need Camera Permission ", Toast.LENGTH_SHORT).show();
                     }
-                    ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
                 }
 
             }
@@ -87,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
@@ -106,14 +106,17 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
     public void showCamera() {
         Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(takePhotoIntent, REQUEST_LOAD_IMG);
     }
+
     public File getCameraFile() {
         File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         return new File(dir, FILE_NAME);
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
@@ -131,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
     public void uploadImage(Uri uri) {
         if (uri != null) {
             try {
@@ -153,14 +157,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void callCloudVision(final Bitmap bitmap) throws IOException {
 
-        new AsyncTask<Object,Void, String>() {
+        new AsyncTask<Object, Void, String>() {
 
             @Override
             protected void onPreExecute() {
                 // show loading bar here
                 Log.d(TAG, "progress bar dialog");
                 //super.onPreExecute();
-                 mDialog = ProgressDialog.show(MainActivity.this, "Loading", "Please wait...");
+                mDialog = ProgressDialog.show(MainActivity.this, "Processing", "Please wait...");
             }
 
 
@@ -244,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
 
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
-                Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
+                //Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
                 Intent loginIntent = new Intent(MainActivity.this, ReadImageActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", result);
@@ -257,6 +261,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }.execute();
     }
+
     @Override
     public void onPause() {
         super.onPause();
@@ -265,15 +270,14 @@ public class MainActivity extends AppCompatActivity {
             mDialog.dismiss();
         //mDialog = null;
     }
+
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         super.onResume();
         if (mDialog != null)
             mDialog.show();
 
     }
-
 
 
     public Bitmap scaleBitmapDown(Bitmap bitmap, int maxDimension) {
@@ -297,15 +301,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String convertResponseToString(BatchAnnotateImagesResponse response) {
-        String message="";
+        String message = "";
 
         List<FaceAnnotation> texts = response.getResponses().get(0).getFaceAnnotations();
         if (texts != null) {
-                message += String.format(Locale.US, "%s:%s:%s:%s", texts.get(0).getAngerLikelihood(), texts.get(0).getJoyLikelihood(), texts.get(0).getSorrowLikelihood(), texts.get(0).getSurpriseLikelihood());
-                message += "\n";
+            message += String.format(Locale.US, "%s:%s:%s:%s", texts.get(0).getAngerLikelihood(), texts.get(0).getJoyLikelihood(), texts.get(0).getSorrowLikelihood(), texts.get(0).getSurpriseLikelihood());
+            message += "\n";
 
         } else {
-            message += "Does not exists";
+            message += "Does not exists, use flash light for better result.";
         }
 
         return message;
