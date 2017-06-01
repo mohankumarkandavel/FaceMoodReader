@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int REQUEST_LOAD_IMG = 1001;
     private static final int REQUEST_CAMERA = 1002;
+    private ProgressDialog mDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,29 +141,26 @@ public class MainActivity extends AppCompatActivity {
                                 1200);
 
                 callCloudVision(bitmap);
-                //mMainImage.setImageBitmap(bitmap);
 
             } catch (IOException e) {
                 Log.d(TAG, "Image picking failed because " + e.getMessage());
-                //Toast.makeText(this, R.string.image_picker_error, Toast.LENGTH_LONG).show();
+
             }
         } else {
             Log.d(TAG, "Image picker gave us a null image.");
-            //Toast.makeText(this, R.string.image_picker_error, Toast.LENGTH_LONG).show();
         }
     }
 
     private void callCloudVision(final Bitmap bitmap) throws IOException {
-        // Switch text to loading
-        //mImageDetails.setText(R.string.loading_message);
 
-        // Do the real work in an async task, because we need to use the network anyway
         new AsyncTask<Object,Void, String>() {
-            ProgressDialog pd;
+
             @Override
             protected void onPreExecute() {
                 // show loading bar here
-                 pd = ProgressDialog.show(MainActivity.this, "Loading", "Please wait...");
+                Log.d(TAG, "progress bar dialog");
+                //super.onPreExecute();
+                 mDialog = ProgressDialog.show(MainActivity.this, "Loading", "Please wait...");
             }
 
 
@@ -245,16 +243,38 @@ public class MainActivity extends AppCompatActivity {
             }
 
             protected void onPostExecute(String result) {
+                super.onPostExecute(result);
                 Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
                 Intent loginIntent = new Intent(MainActivity.this, ReadImageActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", result);
                 loginIntent.putExtras(bundle);
                 startActivity(loginIntent);
-                pd.dismiss();
+                finish();
+                if ((mDialog != null) && mDialog.isShowing()) {
+                    mDialog.dismiss();
+                }
             }
         }.execute();
     }
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if ((mDialog != null) && mDialog.isShowing())
+            mDialog.dismiss();
+        //mDialog = null;
+    }
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        if (mDialog != null)
+            mDialog.show();
+
+    }
+
+
 
     public Bitmap scaleBitmapDown(Bitmap bitmap, int maxDimension) {
 
@@ -285,7 +305,7 @@ public class MainActivity extends AppCompatActivity {
                 message += "\n";
 
         } else {
-            message += "Does not exists try again";
+            message += "Does not exists";
         }
 
         return message;
