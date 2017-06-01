@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Disabled -->
+    <item android:state_enabled="false">
+        <shape>
+            <solid android:color="@color/buttonColorDisabled"/>
+            <corners
+                android:radius="@dimen/button_corner_radius"/>
+        </shape>
+    </item>
+
+    <!--  Pressed -->
+    <item android:state_pressed="true">
+        <shape>
+            <solid android:color="@color/buttonColorPressed"/>
+            <corners
+                android:radius="@dimen/button_corner_radius"/>
+        </shape>
+    </item>
+
+    <!-- Default -->
+    <item>
+        <shape>
+            <solid android:color="@color/buttonColorNormal"/>
+            <corners
+                android:radius="@dimen/button_corner_radius"/>
+        </shape>
+    </item>
+</selector>

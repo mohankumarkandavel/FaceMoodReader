@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name ="primaryColor">#673ab7</color>
+    <color name ="primaryColorDark">#000000</color>
+    <color name ="accentColor">#e91e63</color>
+    <color name ="secondaryColor">#009688</color>
+    <color name="white">#ffffff</color>
+
+    <color name ="appBackground">#ffffff</color>
+    <color name ="btnTextColor">#FFFFFF</color>
+    <color name="buttonColorNormal">@color/accentColor</color>
+    <color name="buttonColorPressed">@color/accentColor</color>
+    <color name="buttonColorNormalGreen">@color/secondaryColor</color>
+    <color name="buttonColorPressedGreen">@color/secondaryColor</color>
+    <color name="buttonColorDisabled">#d4d4d4</color>
 </resources>
